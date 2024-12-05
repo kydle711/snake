@@ -4,38 +4,52 @@ import pygame
 class Snake:
     def __init__(self):
         self.length = 1
-        self.size = (30, 30)
+        self.size = (20, 20)
         self.starting_position = (300, 300)
         self.color = 'dark green'
-        self.speed = 20
+        self.speed = 25
         self.direction = (0, 0)
         self.rect = pygame.Rect(*self.starting_position, *self.size)
         self.last_position = (0, 0)
         self.tails = []
         self.screen = None
 
-    def slither(self):
+    def handle_keys(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            self.move_up()
+        if keys[pygame.K_s]:
+            self.move_down()
+        if keys[pygame.K_a]:
+            self.move_left()
+        if keys[pygame.K_d]:
+            self.move_right()
+
+
+    def draw_snake(self):
         self.last_position = (self.rect.x, self.rect.y)
         self.rect.y += self.direction[1]
         self.rect.x += self.direction[0]
-
-    def draw_snake(self):
         pygame.draw.rect(self.screen, self.color, (self.rect.x, self.rect.y, *self.size))
 
         for tail in self.tails:
             tail.draw_tail()
 
     def move_down(self):
-        self.direction = (0, self.speed)
+        if self.direction[1] == 0:
+            self.direction = (0, self.speed)
 
     def move_up(self):
-        self.direction = (0, -self.speed)
+        if self.direction[1] == 0:
+            self.direction = (0, -self.speed)
 
     def move_left(self):
-        self.direction = (-self.speed, 0)
+        if self.direction[0] == 0:
+            self.direction = (-self.speed, 0)
 
     def move_right(self):
-        self.direction = (self.speed, 0)
+        if self.direction[0] == 0:
+            self.direction = (self.speed, 0)
 
     def _eat_food(self):
         if self.length > 1:
@@ -46,11 +60,18 @@ class Snake:
         self.tails.append(new_tail)
         self.length += 1
 
-    def check_collision(self, other_object):
-        collision = pygame.Rect.colliderect(self.rect, other_object.rect)
-        if collision:
-            self._eat_food()
-            other_object.replace()
+    def check_collision(self, other_object, collision_type):
+            collision = pygame.Rect.colliderect(self.rect, other_object.rect)
+            if collision:
+                if collision_type == 'food':
+                    self._eat_food()
+                    other_object.replace()
+                elif collision_type == 'obstacle':
+                    self._end_game()
+
+
+    def _end_game(self):
+        self.speed = 0
 
 
 

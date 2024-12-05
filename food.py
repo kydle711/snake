@@ -14,6 +14,7 @@ class Food:
         pygame.draw.rect(self.screen, self.color, (self.rect.x, self.rect.y, *self.size))
 
     def replace(self):
-        new_position_x = random.randint(0, self.screen.get_width())
-        new_position_y = random.randint(0, self.screen.get_height())
+        border = 20
+        new_position_x = random.randint(border, self.screen.get_width()-border)
+        new_position_y = random.randint(border, self.screen.get_height()-border)
         self.rect.update((new_position_x, new_position_y, *self.size))
