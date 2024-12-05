@@ -22,10 +22,10 @@ while running:
 
     my_screen.fill("black")
 
-    snake.slither()
     snake.draw_snake()
     apple.draw_food()
-    snake.check_collision(apple.rect)
+    snake.check_collision(apple)
+    snake.slither()
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
@@ -38,7 +38,7 @@ while running:
         snake.move_right()
 
     pygame.display.flip()
-    dt = clock.tick(15)
+    dt = clock.tick(20)
 
 pygame.quit()
 
