@@ -1,51 +1,74 @@
-#TODO
-#outer wall - prevent food from generating off map, detect collisions on wall
-#fine tune movement speed and growth rate
-#add snake tongue and eyes
-#add background?
-#add docstrings and better comments
-#refactor?
-#optimize tail pieces?
-
+# TODO
+# snake tongue
+# background?
+# docstrings and better comments
+# optimize tail pieces?
+# title screen
+# difficulty settings
+# animation when eating food
 
 
 import pygame
-from snake import Snake
-from food import Food
+from snake import Snake, Food, Barrier
+def main():
+    SCREEN_HEIGHT = 720
+    SCREEN_WIDTH = 1280
+    SCREEN_BORDER = 10
+    BORDER_COLOR = 'dark blue'
+    SCREEN_COLOR = 'black'
 
-pygame.init()
-my_screen = pygame.display.set_mode(size=(1280,720))
-pygame.display.set_caption('SNAKE!')
-clock = pygame.time.Clock()
-running = True
-dt = 0
+    pygame.init()
+    my_screen = pygame.display.set_mode(size=(SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption('SNAKE!')
+    clock = pygame.time.Clock()
 
-snake = Snake()
-snake.screen = my_screen
-snake.position = pygame.Vector2(my_screen.get_width() / 2, my_screen.get_height() / 2)
+    game_running = True
+    app_running = True
+    dt = 0
 
-apple = Food()
-apple.screen = my_screen
+    snake = Snake(my_screen, pygame.Vector2(my_screen.get_width() / 2, my_screen.get_height() / 2))
+    apple = Food(my_screen)
+    my_wall = Barrier(SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_BORDER)
 
+    while app_running:
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                app_running = False
+                game_running = False
 
-    my_screen.fill("black")
-    snake.draw_snake()
-    apple.draw_food()
+        while game_running:
 
-    snake.handle_keys()
-    snake.check_collision(apple, 'food')
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    app_running = False
+                    game_running = False
 
-    for tail in snake.tails:
-        snake.check_collision(tail, 'obstacle')
+            if not app_running:
+                break
 
+            my_screen.fill(BORDER_COLOR)
 
-    pygame.display.flip()
-    dt = clock.tick(16)
+            pygame.draw.rect(my_screen, SCREEN_COLOR, my_wall.rect)
 
-pygame.quit()
+            snake.draw_snake()
+            apple.draw_food()
 
+            snake.handle_keys()
+            print("handle keys")
+            game_running = snake.check_collision(apple, 'food')
+
+            game_running = snake.check_collision(my_wall, 'wall')
+
+            for tail in snake.tails:
+                game_running = snake.check_collision(tail, 'obstacle')
+                if not game_running:
+                    break
+
+            pygame.display.flip()
+            dt = clock.tick(18)
+
+    pygame.quit()
+
+if __name__ == '__main__':
+    main()
